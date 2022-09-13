@@ -673,7 +673,7 @@ export default class AdminController {
       const { providerId } = req.body
       const repo = new WalletRepository(AppDataSource)
       const wallet = await repo.getByAccountIdAndProviderId(
-        Number(req.user.userId),
+        Number(req.body.user.userId),
         providerId
       )
       const ids = wallet.records.map((r) => r.originWalletId)

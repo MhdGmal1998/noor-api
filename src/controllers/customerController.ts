@@ -24,7 +24,7 @@ export default class CustomerController {
   ) {
     try {
       const repo = new CustomerRepository(AppDataSource)
-      const id = Number(req.user.customerId)
+      const id = Number(req.body.user.customerId)
       if (!id) throw new BadInputError("هذا الحساب غير صحيح")
       const customer = await repo.getById(id, ["account", "account.wallets"])
       if (!customer) throw new NotFoundError("الحساب غير موجود")
@@ -119,7 +119,7 @@ export default class CustomerController {
   ) {
     try {
       const customerRepo = new CustomerRepository(AppDataSource)
-      const { customerId } = req.user
+      const { customerId } = req.body.user
       if (!customerId) throw new NotAllowedError("لم يتم التحقق من الحساب")
       let customer = await customerRepo.getById(Number(customerId))
       if (!customer) throw new NotFoundError("لم يتم العثور على العميل")

@@ -1,6 +1,6 @@
-import { DataSource, DeepPartial, DeleteResult, Repository } from "typeorm"
+import { DataSource, DeepPartial, DeleteResult, ObjectLiteral, Repository } from "typeorm"
 
-export class BaseRepository<T> {
+export class BaseRepository<T extends ObjectLiteral> {
   protected dbConnection: DataSource
   protected repository: Repository<T>
 
