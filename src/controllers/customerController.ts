@@ -65,9 +65,8 @@ export default class CustomerController {
           customer.isVolunteer = req.body.isVolunteer ?? false
           customer.isBusinessOwner = req.body.isBusinessOwner ?? false
           // create customer account number
-          const accountNumber = await generateAccountNumber(
-            new AccountRepository(AppDataSource)
-          )
+          const accountNumber = req.body.phoneNumber
+          await generateAccountNumber(new AccountRepository(AppDataSource))
           let account = new Account()
           account.username = req.body.username
           account.password = req.body.password

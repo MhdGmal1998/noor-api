@@ -9,7 +9,7 @@ import path from "path"
 import checkStartingConditions from "./lib/startingConditions"
 dotenv.config({ path: path.join(__dirname, "..", ".env") })
 
-// @ts-ignore
+ //@ts-ignore
 const routeFileNames = fs
   .readdirSync(`${__dirname}/routes`)
   .filter((f) => f.endsWith(".js"))
