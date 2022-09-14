@@ -89,6 +89,28 @@ export default class AdminController {
     }
   }
 
+
+  // mines
+  public async getAllRequest(req: Request, res: Response) {
+    try {
+      const provedRequest = new ProviderRepository(AppDataSource)
+
+      const result = provedRequest.getAllByStatus(
+        ProviderStatus.PENDING
+      )
+      res.status(200).json({
+        result: res
+      })
+    }
+    catch (error: any) {
+      Log.error(`adminController.getAllByStatus: ${error.message}`)
+      res.status(error.statusCode ?? 500).json({
+        code: error.code,
+        error: error.message,
+      })
+    }
+  }
+
   public async getAllAccounts(req: Request, res: Response, next: NextFunction) {
     try {
       const accountRepo = new AccountRepository(AppDataSource)
@@ -321,18 +343,18 @@ export default class AdminController {
       // trx
       const trxs = wallets.length
         ? await AppDataSource.getRepository(Transaction)
-            .createQueryBuilder("trx")
-            .where(
-              "trx.fromWalletId IN(:...ids) OR trx.toWalletId IN(:...ids)",
-              {
-                ids: wallets.map((w) => w.id) ?? [0],
-              }
-            )
-            .innerJoinAndSelect("trx.fromWallet", "fromWallet")
-            .innerJoinAndSelect("trx.toWallet", "toWallet")
-            .orderBy("trx.createdAt", "DESC")
-            .take(10)
-            .getMany()
+          .createQueryBuilder("trx")
+          .where(
+            "trx.fromWalletId IN(:...ids) OR trx.toWalletId IN(:...ids)",
+            {
+              ids: wallets.map((w) => w.id) ?? [0],
+            }
+          )
+          .innerJoinAndSelect("trx.fromWallet", "fromWallet")
+          .innerJoinAndSelect("trx.toWallet", "toWallet")
+          .orderBy("trx.createdAt", "DESC")
+          .take(10)
+          .getMany()
         : []
       const arr = []
       const accountRepo = new AccountRepository(AppDataSource)
@@ -455,16 +477,16 @@ export default class AdminController {
         throw new NotFoundError("لم يتم العثور على العميل")
       const trxs = customer.account.wallets.length
         ? await AppDataSource.getRepository(Transaction)
-            .createQueryBuilder("trx")
-            .where(
-              "trx.fromWalletId IN(:...ids) OR trx.toWalletId IN(:...ids)",
-              {
-                ids: customer.account.wallets.map((w) => w.id),
-              }
-            )
-            .orderBy("trx.createdAt", "DESC")
-            .take(5)
-            .getMany()
+          .createQueryBuilder("trx")
+          .where(
+            "trx.fromWalletId IN(:...ids) OR trx.toWalletId IN(:...ids)",
+            {
+              ids: customer.account.wallets.map((w) => w.id),
+            }
+          )
+          .orderBy("trx.createdAt", "DESC")
+          .take(5)
+          .getMany()
         : []
       res.status(200).json({ customer, trxs })
       next()

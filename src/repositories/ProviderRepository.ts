@@ -1,11 +1,21 @@
 import { DataSource } from "typeorm"
 import { Provider } from "../entities/Provider"
 import { BaseRepository } from "./BaseRepo"
+import { ProviderStatus } from '../types';
 
 export class ProviderRepository extends BaseRepository<Provider> {
   constructor(dbConnection: DataSource) {
     const repo = dbConnection.getRepository(Provider)
     super(dbConnection, repo)
+  }
+
+  public async getAllByStatus(
+    status: ProviderStatus
+  ): Promise<number> {
+    const result = await this.repository.count({
+      where: { status }
+    })
+    return result
   }
 
   public async getByAccountId(

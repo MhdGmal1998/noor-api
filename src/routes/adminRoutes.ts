@@ -24,6 +24,10 @@ router
   .route("/pending")
   .get(authenticate, isAdmin, controller.getPendingProviders)
 
+
+router
+  .route("/getAllRequest")
+  .get(controller.getAllRequest)
 router
   .route("/approve")
   .post(
