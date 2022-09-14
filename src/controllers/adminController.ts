@@ -112,21 +112,36 @@ export default class AdminController {
     }
   }
 
-  public async rejectProvider(req: Request, res: Response) {
-    try {
-      const provedRequest = new ProviderRepository(AppDataSource)
-      const acountId = req.body.acountId
-      const result = provedRequest.rejectProvider(acountId)
-      console.log(result)
-      res.status(200).json("تم رفض المزود بنجاح")
 
-    }
-    catch (error: any) {
+
+  public async rejectProvider(req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const providerRepo = new ProviderRepository(AppDataSource)
+      const provider = await providerRepo.getById(req.body.providerId, [
+        "account",
+        "account.wallets",
+      ])
+      if (!provider) throw new NotFoundError("لم يتم العثور على المزود")
+      if (provider.status === ProviderStatus.PENDING)
+        throw new BadInputError("مزود الخدمة مرفوض بالفعل")
+      provider.status = ProviderStatus.PENDING
+      // provider.account.wallets[0].fees = 2
+      await providerRepo.update(provider)
+      res.status(200).json({
+        message: "Provider reject successfully",
+        updatedAt: provider.updatedAt,
+      })
+      next()
+    } catch (error: any) {
       Log.error(`adminController.rejectProvider: ${error.message}`)
       res.status(error.statusCode ?? 500).json({
         code: error.code,
         error: error.message,
       })
+      next()
     }
   }
 
