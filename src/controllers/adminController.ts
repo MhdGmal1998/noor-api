@@ -93,13 +93,14 @@ export default class AdminController {
   // mines
   public async getAllRequest(req: Request, res: Response) {
     try {
+      console.log("hello")
       const provedRequest = new ProviderRepository(AppDataSource)
 
-      const result = provedRequest.getAllByStatus(
+      const result = await provedRequest.getAllByStatus(
         ProviderStatus.PENDING
       )
       res.status(200).json({
-        result: res
+        result: result
       })
     }
     catch (error: any) {
