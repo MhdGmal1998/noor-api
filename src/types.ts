@@ -10,6 +10,7 @@ export enum ProviderStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
   BANNED = "BANNED",
+  REJECT = "REJECT"
 }
 
 export enum CustomerStatus {

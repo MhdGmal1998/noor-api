@@ -28,7 +28,15 @@ router
 router
   .route("/getAllRequest")
   .get(controller.getAllRequest)
-  
+
+router
+.route("/reject")
+.post(
+  authenticate,
+  isAdmin,
+  controller.rejectProvider
+)
+
 router
   .route("/approve")
   .post(

@@ -18,6 +18,21 @@ export class ProviderRepository extends BaseRepository<Provider> {
     return result
   }
 
+  public async rejectProvider(
+    accountId: number
+  ) {
+
+    const res = await this.repository.findOne({
+      where: { accountId }
+    })
+
+    if (res) {
+      res.status = ProviderStatus.REJECT
+      console.log("the update is done successfully ")
+      return await this.update(res)
+    }
+  }
+  
   public async getByAccountId(
     accountId: number,
     relations?: string[]

@@ -112,6 +112,24 @@ export default class AdminController {
     }
   }
 
+  public async rejectProvider(req: Request, res: Response) {
+    try {
+      const provedRequest = new ProviderRepository(AppDataSource)
+      const acountId = req.body.acountId
+      const result = provedRequest.rejectProvider(acountId)
+      console.log(result)
+      res.status(200).json("تم رفض المزود بنجاح")
+
+    }
+    catch (error: any) {
+      Log.error(`adminController.rejectProvider: ${error.message}`)
+      res.status(error.statusCode ?? 500).json({
+        code: error.code,
+        error: error.message,
+      })
+    }
+  }
+
   public async getAllAccounts(req: Request, res: Response, next: NextFunction) {
     try {
       const accountRepo = new AccountRepository(AppDataSource)
