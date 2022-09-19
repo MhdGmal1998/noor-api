@@ -51,8 +51,8 @@ export class Wallet extends BasicEntity {
   @Column("enum", { enum: PointTypes, default: PointTypes.WHITE })
   pointType!: PointTypes
 
-  @Column("enum", { enum: typeWallet, default: typeWallet.SALE })
-  typeWallet!: typeWallet
+  // @Column("enum", { enum: typeWallet, default: typeWallet.SALE })
+  // typeWallet!: typeWallet
 
   @Column("enum", { enum: WalletTypes })
   walletType!: WalletTypes
