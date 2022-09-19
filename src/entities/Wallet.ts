@@ -1,5 +1,5 @@
 import { AfterLoad, Column, Entity, ManyToOne, OneToMany } from "typeorm"
-import { PointTypes, WalletStatus, WalletTypes } from "../types"
+import { PointTypes, WalletStatus, WalletTypes, typeWallet } from '../types';
 import Log from "../util/Log"
 import { Account } from "./Account"
 import BasicEntity from "./BasicEntity"
@@ -50,6 +50,9 @@ export class Wallet extends BasicEntity {
 
   @Column("enum", { enum: PointTypes, default: PointTypes.WHITE })
   pointType!: PointTypes
+
+  @Column("enum", { enum: typeWallet, default: typeWallet.SALE })
+  typeWallet!: typeWallet
 
   @Column("enum", { enum: WalletTypes })
   walletType!: WalletTypes

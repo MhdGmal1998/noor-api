@@ -13,6 +13,11 @@ export enum ProviderStatus {
   REJECT = "REJECT"
 }
 
+export enum typeWallet {
+  SALE = "SALE",
+  GIFT = "GIFT"
+}
+
 export enum CustomerStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
