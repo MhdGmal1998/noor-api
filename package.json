@@ -5,7 +5,8 @@
   "main": "app.ts",
   "scripts": {
     "start:dev": "nodemon",
-    "build": "rimraf ./build && tsc"
+    "build": "rimraf ./build && tsc",
+    "typeorm": "typeorm-ts-node-commonjs -d ./src/infrastructure/typeorm.ts"
   },
   "author": "",
   "license": "ISC",
