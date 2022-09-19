@@ -25,6 +25,7 @@ export const AppDataSource = new DataSource({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
   synchronize: process.argv.includes("--sync"),
+  migrationsRun:false,
   entities: [
     ConsumptionCode,
     SystemConfiguration,
@@ -42,8 +43,11 @@ export const AppDataSource = new DataSource({
     Session,
     Review,
   ],
+  migrations: ['../migrations/*.ts'],
+  
   dropSchema: process.argv.includes("--drop"),
   logging: process.argv.includes("--log"),
+  
 })
 
 export const createDbConnection = async () => {

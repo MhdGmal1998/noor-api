@@ -2,17 +2,14 @@
     "type": "mysql",
     "host": "localhost",
     "port": 3306,
-    "username": "noor",
-    "password": "noor",
-    "database": "noor",
+    "username": "root",
+    "password": "root",
+    "database": "noordb",
     "entities": [
-        "entit/*.ts"
+        "./src/entities/*.ts"
     ],
-    "migrationsTableName": "myMigration",
     "migrations": [
-        "migration/*.ts"
+        "./src/migrations/*.ts"
     ],
-    "cli": {
-        "migrationsDir": "migration"
-    }
+    "migrationsTableName": "migTb"
 }
