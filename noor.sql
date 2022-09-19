@@ -494,6 +494,7 @@ CREATE TABLE `wallet` (
   `balance` float NOT NULL DEFAULT '0',
   `pointType` enum('نقاط بيضاء') NOT NULL DEFAULT 'نقاط بيضاء',
   `walletType` enum('PROVIDER','CUSTOMER','SYSTEM','ORIGIN') NOT NULL,
+  `typeWallet` enum ('SALE','GIFT') Null DEFAULT 'SALE',
   `totalTrx` int NOT NULL DEFAULT '0',
   `totalConsume` float NOT NULL DEFAULT '0',
   `totalSold` float NOT NULL DEFAULT '0',
