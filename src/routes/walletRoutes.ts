@@ -9,7 +9,7 @@ const validator = createValidator()
 const controller = new WalletController()
 
 router.route("/").get(authenticate, controller.myWallets)
-
+// router.route('/getAllWallets').get(controller.getWallets)
 router
   .route("/trx")
   .post(

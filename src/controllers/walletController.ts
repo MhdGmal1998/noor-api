@@ -33,6 +33,24 @@ export class WalletController {
     }
   }
 
+  public getWallets = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      // const wallets = new WalletRepository(AppDataSource)
+      // const data = await wallets.getOriginWallet()
+      // console.log(data)
+      // res.status(200).json({ data: data })
+    }
+    catch (error: any) {
+      Log.error(`WalletController.getWallets ${error.message}`)
+      res.status(500).json({ error: error.message })
+      next()
+    }
+  }
+
   public myWallets = async (
     req: Request,
     res: Response,
