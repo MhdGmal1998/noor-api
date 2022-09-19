@@ -39,10 +39,12 @@ export class WalletController {
     next: NextFunction
   ) => {
     try {
+
+      const wallets = new WalletRepository(AppDataSource)
       // const wallets = new WalletRepository(AppDataSource)
-      // const data = await wallets.getOriginWallet()
-      // console.log(data)
-      // res.status(200).json({ data: data })
+      const data = await wallets.getAllWallet()
+      console.log(data)
+      res.status(200).json({ data: data })
     }
     catch (error: any) {
       Log.error(`WalletController.getWallets ${error.message}`)
@@ -56,6 +58,7 @@ export class WalletController {
     res: Response,
     next: NextFunction
   ) => {
+
     try {
       const wallets = await AppDataSource.getRepository(Wallet)
         .createQueryBuilder("w")

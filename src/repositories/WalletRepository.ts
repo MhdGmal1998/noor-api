@@ -113,6 +113,14 @@ export class WalletRepository extends BaseRepository<Wallet> {
     })
   }
 
+  public async getAllWallet(): Promise<Wallet[]> {
+    return await this.repository.find({
+      where: {
+        walletType: WalletTypes.SYSTEM || WalletTypes.ORIGIN || WalletTypes.CUSTOMER || WalletTypes.PROVIDER
+      }
+    })
+  }
+
   public async getAllProviderWallets(providerId: number): Promise<Wallet[]> {
     return await this.repository.find({
       where: {
