@@ -27,12 +27,12 @@ export class Account extends BasicEntity {
   })
   password!: string
 
-  @Column("int", {
-    unique: true,
+  @Column({
+    type: "bigint"
   })
   accountNumber!: string
 
-  
+
   // hashing passwords
   @AfterLoad()
   loadTempPass = () => {
