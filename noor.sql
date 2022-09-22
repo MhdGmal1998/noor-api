@@ -151,7 +151,7 @@ CREATE TABLE `consumption_code` (
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `deletedAt` datetime(6) DEFAULT NULL,
-  `accountNumber` varchar(33) NOT NULL,
+  `accountNumber`decimal(15,0) NOT NULL,
   `providerId` int NOT NULL,
   `status` enum('PENDING','EXPIRED','USED') NOT NULL DEFAULT 'PENDING',
   `amount` float NOT NULL,
