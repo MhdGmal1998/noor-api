@@ -40,7 +40,8 @@ export class TransactionController {
   public async getAccountInfo(req: Request, res: Response, next: NextFunction) {
     try {
       const accountRepo = new AccountRepository(AppDataSource)
-      const account = await accountRepo.getByAccountNumber((req.params.acn)
+      const account = await accountRepo.getByAccountNumber(
+        Number(req.params.acn)
       )
       if (!account) throw new NotFoundError("Account not found!")
       const giftingFees =
@@ -149,7 +150,7 @@ export class TransactionController {
 
       if (fromWallet.bonus)
         subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
-
+        
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
         const giftingFees = await configRepo.getByKey("GIFTING_FEES")
         const MAXIMUM_DAILY_TRANSACTIONS =

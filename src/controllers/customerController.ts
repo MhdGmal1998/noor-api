@@ -65,13 +65,13 @@ export default class CustomerController {
           customer.isVolunteer = req.body.isVolunteer ?? false
           customer.isBusinessOwner = req.body.isBusinessOwner ?? false
           // create customer account number
-          const accountNumber = req.body.phoneNumber
-          // await generateAccountNumber(new AccountRepository(AppDataSource))
+          const accountNumber = parseInt(req.body.phoneNumber)
+          await generateAccountNumber(new AccountRepository(AppDataSource))
           let account = new Account()
           account.username = req.body.username
           account.password = req.body.password
 
-
+        
           account.accountNumber = accountNumber
           account.type = UserTypes.CUSTOMER
           account = await em.save(account)
@@ -141,8 +141,8 @@ export default class CustomerController {
 
 export const generateAccountNumber = async (
   repo: AccountRepository
-): Promise<string> => {
-  const number = generateNumber(config.accountNumberLength).toString()
+): Promise<number> => {
+  const number = generateNumber(config.accountNumberLength)
   const acc = await repo.getByAccountNumber(number)
   if (acc) return generateAccountNumber(repo)
   return number
