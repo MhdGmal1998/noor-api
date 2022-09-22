@@ -34,7 +34,7 @@ CREATE TABLE `account` (
   `lastLogin` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_41dfcb70af895ddf9a53094515` (`username`),
-  -- UNIQUE KEY `IDX_ee66d482ebdf84a768a7da36b0` (`accountNumber`)
+  UNIQUE KEY `IDX_ee66d482ebdf84a768a7da36b0` (`accountNumber`)
 ) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -151,7 +151,7 @@ CREATE TABLE `consumption_code` (
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `deletedAt` datetime(6) DEFAULT NULL,
-  `accountNumber`decimal NOT NULL,
+  `accountNumber`decimal(15,0) NOT NULL,
   `providerId` int NOT NULL,
   `status` enum('PENDING','EXPIRED','USED') NOT NULL DEFAULT 'PENDING',
   `amount` float NOT NULL,
