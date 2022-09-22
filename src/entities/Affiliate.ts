@@ -2,6 +2,9 @@ import { Column, Entity, OneToMany } from "typeorm"
 import BasicEntity from "./BasicEntity"
 import { Provider } from "./Provider"
 
+
+//  the marketing person
+
 @Entity()
 export class Affiliate extends BasicEntity {
   @Column("varchar")
@@ -12,6 +15,7 @@ export class Affiliate extends BasicEntity {
 
   @Column("enum", { enum: ["ACTIVE", "INACTIVE"], default: "ACTIVE" })
   status!: "ACTIVE" | "INACTIVE"
+
 
   @OneToMany(() => Provider, (p) => p.affiliate, { eager: true })
   providers!: Provider[]

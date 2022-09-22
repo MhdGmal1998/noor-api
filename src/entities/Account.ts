@@ -30,8 +30,9 @@ export class Account extends BasicEntity {
   @Column("int", {
     unique: true,
   })
-  accountNumber!: number
+  accountNumber!: string
 
+  
   // hashing passwords
   @AfterLoad()
   loadTempPass = () => {
@@ -62,6 +63,8 @@ export class Account extends BasicEntity {
   })
   lastLogin?: Date
 
+
+  // The Account is linked with the provider in one to one relation
   @OneToOne(() => Provider, (provider) => provider.account, {
     onDelete: "CASCADE",
   })

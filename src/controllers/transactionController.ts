@@ -106,47 +106,70 @@ export class TransactionController {
   // OR GIFTING
   public async transferPoints(req: Request, res: Response, next: NextFunction) {
     try {
+
+      // the id of wallet, 
+      // the wallet has typeWallet property which can be 
+      // Sale or GIFT
       let { walletId, recepientAccountNumber, amount } = req.body
+      // Wallet Repo
       const walletRepo = new WalletRepository(AppDataSource)
+      // The account Repo
       const accountRepo = new AccountRepository(AppDataSource)
+
+      // Get the wallet 
       const fromWallet = await walletRepo.getById(walletId)
       const configRepo = new SystemConfigurationRepository(AppDataSource)
+
       if (!fromWallet) throw new NotFoundError("Sender not found!")
       if (fromWallet.status !== WalletStatus.ACTIVE)
         throw new NotAllowedError("هذه المحفظة معطّلة.")
+
       denyNotWalletOwner(req.user.userId, fromWallet)
+
+
+      // get the recepient with his wallets
       const recepient = await accountRepo.getByAccountNumber(
         recepientAccountNumber,
         ["wallets"]
       )
-      if (!recepient) throw new NotFoundError("Recepient not found!")
+
+      if (!recepient)
+        throw new NotFoundError("Recepient not found!")
+
       if (recepient.id === Number(req.user.userId))
         throw new NotAllowedError("لا يمكن تحويل الرصيد إلى نفسك")
       if (recepient.type === UserTypes.PROVIDER)
         throw new NotAllowedError("لا يمكن تحويل الرصيد إلى مزود الخدمة")
+
       let type = TransactionTypes.TRANSFER
       // provider transferring points
       // incures granting fees
       let fees = fromWallet.fees ?? 0
+
       let subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+
       if (fromWallet.bonus)
         subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
+        
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
         const giftingFees = await configRepo.getByKey("GIFTING_FEES")
         const MAXIMUM_DAILY_TRANSACTIONS =
           Number(
             await configRepo.getValueByKey("MAXIMUM_DAILY_TRANSACTIONS")
           ) ?? constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_TRANSACTIONS
+
         const MAXIMUM_DAILY_TRANSACTIONS_AMOUNT =
           (await configRepo.getValueByKey("MAXIMUM_DAILY_OUTGOING_POINTS")) ??
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_OUTGOING_POINTS
         if (giftingFees) fees = Number(giftingFees.value)
+
         else fees = constants.DEFAULT_SYSTEM_CONF.GIFTING_FEES
         subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
         // check maximums
         const wallets = await walletRepo.getAllAccountWallets(fromWallet.id, [
           "outgoingTransactions",
         ])
+
         const trxsToday: Transaction[] = []
         wallets.map((wallet) => {
           wallet.outgoingTransactions
@@ -167,6 +190,7 @@ export class TransactionController {
             .status(403)
             .json("لقد تخطّيت الحد الأقصى لمبلغ المعاملات اليومية.")
       }
+
       if (fromWallet.balance < subtotal)
         throw new BadInputError(
           `ليس لديك رصيدٌ كافٍ لإتمام هذه العملية ${subtotal}`
@@ -246,6 +270,8 @@ export class TransactionController {
       return res.status(err.statusCode ?? 500).send(err.message)
     }
   }
+
+
 
   public async consumePoint(req: Request, res: Response, next: NextFunction) {
     try {
@@ -373,8 +399,8 @@ export class TransactionController {
       const where = incomingOnly
         ? incomingWhere
         : outgoingOnly
-        ? outgoingWhere
-        : [incomingWhere, outgoingWhere]
+          ? outgoingWhere
+          : [incomingWhere, outgoingWhere]
 
       const trxs = await AppDataSource.getRepository(Transaction).find({
         where,
@@ -480,8 +506,8 @@ export class TransactionController {
       const where = incomingOnly
         ? incomingWhere
         : outgoingOnly
-        ? outgoingWhere
-        : [incomingWhere, outgoingWhere]
+          ? outgoingWhere
+          : [incomingWhere, outgoingWhere]
       const accountRepo = new AccountRepository(AppDataSource)
       const trxs = await AppDataSource.getRepository(Transaction).find({
         take,
