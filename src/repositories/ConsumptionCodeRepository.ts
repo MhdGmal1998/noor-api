@@ -13,7 +13,7 @@ export class ConsumptionCodeRepository extends BaseRepository<ConsumptionCode> {
 
   public async generateCcode(
     amount: number,
-    accountNumber: number,
+    accountNumber: string,
     providerId: number
   ) {
     const code = generateNumber(config.cCodeNumberLength)
@@ -22,7 +22,7 @@ export class ConsumptionCodeRepository extends BaseRepository<ConsumptionCode> {
 
   public async getCode(
     code: number,
-    accountNumber: number,
+    accountNumber: string,
     relations?: string[]
   ) {
     return await this.repository.findOne({

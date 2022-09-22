@@ -25,7 +25,7 @@ export default class ConsumptionCodeController {
         throw new NotAllowedError("لا يمكنك القيام بهذه العملية")
       const { code, accountNumber } = req.params
       const CcodeRepo = new ConsumptionCodeRepository(AppDataSource)
-      const ccode = await CcodeRepo.getCode(Number(code), Number(accountNumber))
+      const ccode = await CcodeRepo.getCode(Number(code), (accountNumber))
       if (!ccode) throw new NotFoundError("لم يتم العثور على الكود")
       switch (ccode.status) {
         case ConsumptionCodeStatus.EXPIRED:
@@ -80,7 +80,7 @@ export default class ConsumptionCodeController {
       const CcodeRepo = new ConsumptionCodeRepository(AppDataSource)
       const walletRepo = new WalletRepository(AppDataSource)
       const accountRepo = new AccountRepository(AppDataSource)
-      const ccode = await CcodeRepo.getCode(Number(code), Number(accountNumber))
+      const ccode = await CcodeRepo.getCode(Number(code), (accountNumber))
       const acc = await accountRepo.getByAccountNumber(accountNumber, [
         "wallets",
       ])

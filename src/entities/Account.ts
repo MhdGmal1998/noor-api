@@ -27,10 +27,10 @@ export class Account extends BasicEntity {
   })
   password!: string
 
-  @Column("decimal", {
+  @Column("varchar", {
     unique: true,
   })
-  accountNumber!: number
+  accountNumber!: string
 
   
   // hashing passwords

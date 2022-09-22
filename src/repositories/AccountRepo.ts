@@ -13,7 +13,7 @@ export class AccountRepository extends BaseRepository<Account> {
   }
 
   public async getByAccountNumber(
-    accountNumber: number,
+    accountNumber: string,
     relations?: string[]
   ): Promise<Account | undefined> {
     const result = await this.repository.findOne({
@@ -58,7 +58,7 @@ export class AccountRepository extends BaseRepository<Account> {
     const account = new Account()
     account.username = "system"
     account.password = "system"
-    account.accountNumber = await generateAccountNumber(this)
+    account.accountNumber = (await generateAccountNumber(this)).toString()
     account.type = UserTypes.ADMIN
     return await this.repository.save(account)
   }
