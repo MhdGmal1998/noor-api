@@ -27,7 +27,7 @@ export class Account extends BasicEntity {
   })
   password!: string
 
-  @Column("int", {
+  @Column("decimal", {
     unique: true,
   })
   accountNumber!: number

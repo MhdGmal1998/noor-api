@@ -6,7 +6,7 @@ import { Provider } from "./Provider"
 
 @Entity()
 export class ConsumptionCode extends BasicEntity {
-  @Column("int")
+  @Column("decimal")
   accountNumber!: number
 
   @ManyToOne(() => Provider)
