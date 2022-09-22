@@ -34,7 +34,7 @@ CREATE TABLE `account` (
   `lastLogin` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_41dfcb70af895ddf9a53094515` (`username`),
-  -- UNIQUE KEY `IDX_ee66d482ebdf84a768a7da36b0` (`accountNumber`)
+  UNIQUE KEY `IDX_ee66d482ebdf84a768a7da36b0` (`accountNumber`)
 ) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
