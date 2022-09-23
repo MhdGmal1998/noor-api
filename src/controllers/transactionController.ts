@@ -195,6 +195,11 @@ export class TransactionController {
           fees = constants.DEFAULT_SYSTEM_CONF.GIFTING_FEES
 
         // subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+        if (flagTransfer == "SALE")
+          subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+        else if (flagTransfer == "GIFT")
+          subtotal = Number(((amount * fees) / 100).toFixed(2))
+
         // check maximums
         const wallets = await walletRepo.getAllAccountWallets(fromWallet.id, [
           "outgoingTransactions",
