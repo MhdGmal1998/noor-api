@@ -41,7 +41,7 @@ export class TransactionController {
     try {
       const accountRepo = new AccountRepository(AppDataSource)
       const account = await accountRepo.getByAccountNumber(
-        Number(req.params.acn)
+        (req.params.acn)
       )
       if (!account) throw new NotFoundError("Account not found!")
       const giftingFees =
@@ -117,12 +117,20 @@ export class TransactionController {
       const accountRepo = new AccountRepository(AppDataSource)
 
       // Get the wallet 
+      console.log("step 1  " + flagTransfer)
+
       const fromWallet = await walletRepo.getById(walletId)
+      console.log("after get wallet 1  " + flagTransfer)
+
       const configRepo = new SystemConfigurationRepository(AppDataSource)
+
+      console.log("after get systemConfig " + flagTransfer)
 
       if (!fromWallet) throw new NotFoundError("Sender not found!")
       if (fromWallet.status !== WalletStatus.ACTIVE)
         throw new NotAllowedError("هذه المحفظة معطّلة.")
+
+      console.log("after check wallet" + flagTransfer)
 
       denyNotWalletOwner(req.user.userId, fromWallet)
 
@@ -133,6 +141,8 @@ export class TransactionController {
         ["wallets"]
       )
 
+      console.log("after get recepient " + flagTransfer)
+
       if (!recepient)
         throw new NotFoundError("Recepient not found!")
 
@@ -141,10 +151,13 @@ export class TransactionController {
       if (recepient.type === UserTypes.PROVIDER)
         throw new NotAllowedError("لا يمكن تحويل الرصيد إلى مزود الخدمة")
 
+      console.log("after check the recepeint id" + flagTransfer)
       let type = TransactionTypes.TRANSFER
       // provider transferring points
       // incures granting fees
       let fees = fromWallet.fees ?? 0
+
+      console.log("after get fees " + flagTransfer + " the fees " + fees)
 
       // let subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
       let subtotal = 0
@@ -153,10 +166,12 @@ export class TransactionController {
       else if (flagTransfer == "GIFT")
         subtotal = Number(((amount * fees) / 100).toFixed(2))
 
+      console.log("after cal subtotal  " + flagTransfer + " subtotal " + subtotal)
+
       if (fromWallet.bonus)
         subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
 
-
+      console.log("after cal bonus  " + flagTransfer + " subtotal " + subtotal)
 
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
         const giftingFees = await configRepo.getByKey("GIFTING_FEES")
@@ -165,7 +180,9 @@ export class TransactionController {
             await configRepo.getValueByKey("MAXIMUM_DAILY_TRANSACTIONS")
           ) ??
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_TRANSACTIONS
+        console.log("after get giftingFees  " + flagTransfer + " giftingFees " + giftingFees)
 
+        
         const MAXIMUM_DAILY_TRANSACTIONS_AMOUNT =
           (await configRepo.getValueByKey("MAXIMUM_DAILY_OUTGOING_POINTS")) ??
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_OUTGOING_POINTS

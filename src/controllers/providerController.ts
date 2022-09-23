@@ -43,7 +43,7 @@ export class ProviderController {
           account.password = req.body.password
           account.accountNumber = await generateAccountNumber(
             new AccountRepository(AppDataSource)
-          )
+          ).toString()
           account.type = UserTypes.PROVIDER
           await em.save(account)
           p.accountId = account.id
@@ -161,7 +161,7 @@ export class ProviderController {
       let account = new Account()
       account.username = username
       account.password = password
-      account.accountNumber = await generateAccountNumber(accountRepo)
+      account.accountNumber = (await generateAccountNumber(accountRepo)).toString()
       account.type = UserTypes.CASHIER
       account = await accountRepo.create(account)
       const cashier = await cahsierRepo.create({
