@@ -697,7 +697,7 @@ export default class AdminController {
       let account = new Account()
       account.username = username
       account.password = password
-      account.accountNumber = await generateAccountNumber(accountRepo)
+      account.accountNumber = (await generateAccountNumber(accountRepo)).toString()
       account.type = UserTypes.CASHIER
       account = await accountRepo.create(account)
       const cashier = await cahsierRepo.create({

@@ -110,7 +110,7 @@ export class TransactionController {
       // the id of wallet, 
       // the wallet has typeWallet property which can be 
       // Sale or GIFT
-      let { walletId, recepientAccountNumber, amount } = req.body
+      let { walletId, recepientAccountNumber, amount, flagTransfer } = req.body
       // Wallet Repo
       const walletRepo = new WalletRepository(AppDataSource)
       // The account Repo
@@ -146,24 +146,37 @@ export class TransactionController {
       // incures granting fees
       let fees = fromWallet.fees ?? 0
 
-      let subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+      // let subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+      let subtotal = 0
+      if (flagTransfer == "SALE")
+        subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+      else if (flagTransfer == "GIFT")
+        subtotal = Number(((amount * fees) / 100).toFixed(2))
 
       if (fromWallet.bonus)
         subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
-        
+
+
+
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
         const giftingFees = await configRepo.getByKey("GIFTING_FEES")
         const MAXIMUM_DAILY_TRANSACTIONS =
           Number(
             await configRepo.getValueByKey("MAXIMUM_DAILY_TRANSACTIONS")
-          ) ?? constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_TRANSACTIONS
+          ) ??
+          constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_TRANSACTIONS
 
         const MAXIMUM_DAILY_TRANSACTIONS_AMOUNT =
           (await configRepo.getValueByKey("MAXIMUM_DAILY_OUTGOING_POINTS")) ??
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_OUTGOING_POINTS
-        if (giftingFees) fees = Number(giftingFees.value)
 
-        else fees = constants.DEFAULT_SYSTEM_CONF.GIFTING_FEES
+
+        if (giftingFees)
+          fees = Number(giftingFees.value)
+
+        else
+          fees = constants.DEFAULT_SYSTEM_CONF.GIFTING_FEES
+
         subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
         // check maximums
         const wallets = await walletRepo.getAllAccountWallets(fromWallet.id, [
