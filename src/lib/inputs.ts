@@ -91,6 +91,7 @@ export const ValidateTransferPoints = Joi.object({
   walletId: Joi.number().required(),
   recepientAccountNumber: Joi.number().required(),
   amount: Joi.number().min(0).required(),
+  flagTransfer: Joi.string().required()
 })
 
 export const ValidateGetWalletTrx = Joi.object({
