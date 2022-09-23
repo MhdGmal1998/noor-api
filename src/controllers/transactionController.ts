@@ -182,7 +182,7 @@ export class TransactionController {
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_TRANSACTIONS
         console.log("after get giftingFees  " + flagTransfer + " giftingFees " + giftingFees)
 
-        
+
         const MAXIMUM_DAILY_TRANSACTIONS_AMOUNT =
           (await configRepo.getValueByKey("MAXIMUM_DAILY_OUTGOING_POINTS")) ??
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_OUTGOING_POINTS
@@ -194,7 +194,7 @@ export class TransactionController {
         else
           fees = constants.DEFAULT_SYSTEM_CONF.GIFTING_FEES
 
-        subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+        // subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
         // check maximums
         const wallets = await walletRepo.getAllAccountWallets(fromWallet.id, [
           "outgoingTransactions",
