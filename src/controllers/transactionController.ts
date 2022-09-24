@@ -767,6 +767,7 @@ export const makeTransaction = async (
         amount = Number(((amount * from.bonus) / 100).toFixed(2))
 
 
+    console.log("The Final amount " + amount)
     if (from.balance < amount) throw new BadInputError("ليس لديك رصيدٌ كافي")
     trx.amount = amount
     trx.fromWalletId = from.id

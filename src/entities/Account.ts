@@ -30,7 +30,7 @@ export class Account extends BasicEntity {
   @Column({
     type: "bigint"
   })
-  accountNumber!: string
+  accountNumber!: number
 
 
   // hashing passwords

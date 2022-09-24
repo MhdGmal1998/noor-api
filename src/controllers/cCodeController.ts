@@ -119,7 +119,8 @@ export default class ConsumptionCodeController {
             toWallet,
             TransactionTypes.PURCHASE,
             amount,
-            0
+            0,
+            ""
           )
           ccode.amount -= amount
           if (ccode.amount <= 0) ccode.status = ConsumptionCodeStatus.USED
