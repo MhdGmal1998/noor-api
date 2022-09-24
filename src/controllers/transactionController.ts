@@ -171,7 +171,7 @@ export class TransactionController {
       if (fromWallet.bonus)
         subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
 
-      console.log("after cal bonus  " + flagTransfer + " subtotal " + subtotal)
+      // console.log("after cal bonus  " + flagTransfer + " subtotal " + subtotal)
 
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
         const giftingFees = await configRepo.getByKey("GIFTING_FEES")
@@ -261,6 +261,8 @@ export class TransactionController {
         )
         type = TransactionTypes.GIFT
       } else
+
+        // Provider
         await AppDataSource.manager.transaction(async (em: EntityManager) => {
           const total = fromWallet.bonus
             ? amount + Number(((amount * fromWallet.bonus) / 100).toFixed(2))
@@ -293,7 +295,8 @@ export class TransactionController {
         wallet,
         type,
         amount,
-        fromWallet.fees ?? 0
+        fromWallet.fees ?? 0,
+        flagTransfer
       )
       // update provider account
       // #TODO I'm not supposed to be here
@@ -714,7 +717,8 @@ export const makeTransaction = async (
   to: Wallet,
   type: TransactionTypes,
   amount: number,
-  fees: number
+  fees: number,
+  flagTransfer: string
 ): Promise<Transaction> => {
   const walletRepo = new WalletRepository(AppDataSource)
   const recordRepo = new PointRecordRepository(AppDataSource)
@@ -722,7 +726,10 @@ export const makeTransaction = async (
     // take system cut
     if (fees > 0 && from.walletType !== WalletTypes.SYSTEM) {
       // check if there's a system wallet for this provider:
+
+
       const cutAmount = Number(((amount * fees) / 100).toFixed(2))
+      // const cutAmount = fees
       if (cutAmount > 0) {
         const systemWallet = await walletRepo.getOrCreateSystemWalletOfProvider(
           from.providerId ?? 0
@@ -754,7 +761,12 @@ export const makeTransaction = async (
     // transfer points
     const trx = new Transaction()
     if (from.bonus && type === TransactionTypes.TRANSFER)
-      amount += Number(((amount * from.bonus) / 100).toFixed(2))
+      if (flagTransfer == "SALE")
+        amount += Number(((amount * from.bonus) / 100).toFixed(2))
+      else if (flagTransfer == "GIFT")
+        amount = Number(((amount * from.bonus) / 100).toFixed(2))
+
+
     if (from.balance < amount) throw new BadInputError("ليس لديك رصيدٌ كافي")
     trx.amount = amount
     trx.fromWalletId = from.id
@@ -763,12 +775,15 @@ export const makeTransaction = async (
     trx.transactionType = type
     trx.trxNumber = generateNumber(9)
     await em.save(trx)
+
     // update wallets
     from.balance -= amount
     from.totalTrx += 1
     to.totalTrx += 1
-    if (from.walletType === WalletTypes.PROVIDER) from.totalSold += amount
-    if (type === TransactionTypes.PURCHASE) from.totalConsume += amount
+    if (from.walletType === WalletTypes.PROVIDER)
+      from.totalSold += amount
+    if (type === TransactionTypes.PURCHASE)
+      from.totalConsume += amount
     await em.save(from)
     await em.save(to)
     trx.status = TransactionStatus.CONFIRMED
