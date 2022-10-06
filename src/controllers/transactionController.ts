@@ -764,7 +764,6 @@ export const makeTransaction = async (
         trx.transactionType = TransactionTypes.FEES
         trx.trxNumber = generateNumber(9)
         trx.status = TransactionStatus.CONFIRMED
-        await em.save(from)
         await em.save(trx)
       }
     }
@@ -788,7 +787,8 @@ export const makeTransaction = async (
     await em.save(trx)
 
     // update wallets
-    from.balance -= amount
+    const cutAmount = Number(((amount * fees) / 100).toFixed(2))
+    from.balance -= (amount + cutAmount)
     from.totalTrx += 1
     to.totalTrx += 1
     if (from.walletType === WalletTypes.PROVIDER)
