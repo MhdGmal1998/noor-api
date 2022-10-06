@@ -117,20 +117,20 @@ export class TransactionController {
       const accountRepo = new AccountRepository(AppDataSource)
 
       // Get the wallet 
-      console.log("step 1  " + flagTransfer)
+
 
       const fromWallet = await walletRepo.getById(walletId)
-      console.log("after get wallet 1  " + flagTransfer)
+
 
       const configRepo = new SystemConfigurationRepository(AppDataSource)
 
-      console.log("after get systemConfig " + flagTransfer)
+
 
       if (!fromWallet) throw new NotFoundError("Sender not found!")
       if (fromWallet.status !== WalletStatus.ACTIVE)
         throw new NotAllowedError("هذه المحفظة معطّلة.")
 
-      console.log("after check wallet" + flagTransfer)
+
 
       denyNotWalletOwner(req.user.userId, fromWallet)
 
@@ -141,23 +141,24 @@ export class TransactionController {
         ["wallets"]
       )
 
-      console.log("after get recepient " + flagTransfer)
+
 
       if (!recepient)
-        throw new NotFoundError("Recepient not found!")
+        throw new NotFoundError("لا يوجد مستلم")
 
       if (recepient.id === Number(req.user.userId))
         throw new NotAllowedError("لا يمكن تحويل الرصيد إلى نفسك")
       if (recepient.type === UserTypes.PROVIDER)
         throw new NotAllowedError("لا يمكن تحويل الرصيد إلى مزود الخدمة")
 
-      console.log("after check the recepeint id" + flagTransfer)
+
       let type = TransactionTypes.TRANSFER
       // provider transferring points
       // incures granting fees
+      // the system fees
       let fees = fromWallet.fees ?? 0
 
-      console.log("after get fees " + flagTransfer + " the fees " + fees)
+
 
       // let subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
       let subtotal = 0
@@ -166,12 +167,10 @@ export class TransactionController {
       else if (flagTransfer == "GIFT")
         subtotal = Number(((amount * fees) / 100).toFixed(2))
 
-      console.log("after cal subtotal  " + flagTransfer + " subtotal " + subtotal)
 
       if (fromWallet.bonus)
         subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
 
-      // console.log("after cal bonus  " + flagTransfer + " subtotal " + subtotal)
 
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
         const giftingFees = await configRepo.getByKey("GIFTING_FEES")
@@ -180,7 +179,6 @@ export class TransactionController {
             await configRepo.getValueByKey("MAXIMUM_DAILY_TRANSACTIONS")
           ) ??
           constants.DEFAULT_SYSTEM_CONF.MAXIMUM_DAILY_TRANSACTIONS
-        console.log("after get giftingFees  " + flagTransfer + " giftingFees " + giftingFees)
 
 
         const MAXIMUM_DAILY_TRANSACTIONS_AMOUNT =
@@ -211,12 +209,14 @@ export class TransactionController {
             .filter((t) => t.createdAt.getDate() === new Date().getDate())
             .map((t) => trxsToday.push(t))
         })
+
         Log.debug("TRXS TODAY:")
         console.log(trxsToday)
         if (trxsToday.length >= MAXIMUM_DAILY_TRANSACTIONS)
           return res
             .status(403)
             .json("لقد تخطّيت الحد الأقصى لعدد المعاملات اليومية.")
+
         const trxAmount = Math.round(
           trxsToday.reduce((acc, trx) => acc + trx.amount, 0)
         )
@@ -230,6 +230,7 @@ export class TransactionController {
         throw new BadInputError(
           `ليس لديك رصيدٌ كافٍ لإتمام هذه العملية ${subtotal}`
         )
+
       // find the target wallet
       let wallet = recepient.wallets.find(
         (w) => w.providerId === fromWallet.providerId
@@ -264,18 +265,22 @@ export class TransactionController {
 
         // Provider
         await AppDataSource.manager.transaction(async (em: EntityManager) => {
-          const total = fromWallet.bonus
-            ? amount + Number(((amount * fromWallet.bonus) / 100).toFixed(2))
+          // note 1
+          const total = fromWallet.bonus ?
+            (flagTransfer == "SALE" ? amount : 0) + Number(((amount * fromWallet.bonus) / 100).toFixed(2))
             : amount
           // take system cut
           // transfer
+
           let record = await em.findOne(PointsRecord, {
             where: {
               originWalletId: fromWallet.id,
               targetWalletId: wallet!.id,
             },
           })
-          if (record) record.amount += total
+
+          if (record)
+            record.amount += total
           else
             record = em.create(PointsRecord, {
               originWalletId: fromWallet.id,
@@ -284,8 +289,8 @@ export class TransactionController {
             })
           Log.debug("TWID")
           await em.save(record)
-          wallet!.records = wallet?.records
-            ? [...wallet!.records, record]
+
+          wallet!.records = wallet?.records ? [...wallet!.records, record]
             : [record]
           await em.save(wallet)
         })
@@ -720,6 +725,7 @@ export const makeTransaction = async (
   fees: number,
   flagTransfer: string
 ): Promise<Transaction> => {
+
   const walletRepo = new WalletRepository(AppDataSource)
   const recordRepo = new PointRecordRepository(AppDataSource)
   return await AppDataSource.manager.transaction(async (em: EntityManager) => {
@@ -728,8 +734,10 @@ export const makeTransaction = async (
       // check if there's a system wallet for this provider:
 
 
+      // system fees 
       const cutAmount = Number(((amount * fees) / 100).toFixed(2))
       // const cutAmount = fees
+
       if (cutAmount > 0) {
         const systemWallet = await walletRepo.getOrCreateSystemWalletOfProvider(
           from.providerId ?? 0
@@ -743,6 +751,7 @@ export const makeTransaction = async (
         systemWallet.records = systemWallet.records
           ? [...systemWallet.records, record]
           : [record]
+
         // update provider balance
         from.balance -= cutAmount
         from.totalSold += cutAmount
@@ -755,6 +764,7 @@ export const makeTransaction = async (
         trx.transactionType = TransactionTypes.FEES
         trx.trxNumber = generateNumber(9)
         trx.status = TransactionStatus.CONFIRMED
+        await em.save(from)
         await em.save(trx)
       }
     }
@@ -767,7 +777,7 @@ export const makeTransaction = async (
         amount = Number(((amount * from.bonus) / 100).toFixed(2))
 
 
-    console.log("The Final amount " + amount)
+
     if (from.balance < amount) throw new BadInputError("ليس لديك رصيدٌ كافي")
     trx.amount = amount
     trx.fromWalletId = from.id
