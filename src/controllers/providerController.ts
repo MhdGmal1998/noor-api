@@ -65,7 +65,7 @@ export class ProviderController {
       if (error.code === "ER_DUP_ENTRY") {
         return res
           .status(400)
-          .json({ message: "اسم الحساب أو البريد الإلكتروني مستعمل بالفعل." })
+          .json({ message: "رقم الهاتف موجود مسبقا" })
       }
       res
         .status(error.statusCode ?? 500)
