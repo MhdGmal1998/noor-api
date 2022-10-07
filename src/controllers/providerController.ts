@@ -26,6 +26,8 @@ export class ProviderController {
     next: NextFunction
   ) {
     try {
+
+      console.log(req.body)
       const provider = await AppDataSource.manager.transaction(
         async (em: EntityManager) => {
           const p = new Provider()
