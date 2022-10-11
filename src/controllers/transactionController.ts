@@ -163,13 +163,13 @@ export class TransactionController {
       // let subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
       let subtotal = 0
       if (flagTransfer == "SALE")
-        subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+        subtotal = Number((amount + (amount * fees) / 100))
       else if (flagTransfer == "GIFT")
-        subtotal = Number(((amount * fees) / 100).toFixed(2))
+        subtotal = Number(((amount * fees) / 100))
 
 
       if (fromWallet.bonus)
-        subtotal += Number(((amount * fromWallet.bonus) / 100).toFixed(2))
+        subtotal += Number(((amount * fromWallet.bonus) / 100))
 
 
       if (fromWallet.walletType === WalletTypes.CUSTOMER) {
@@ -194,9 +194,9 @@ export class TransactionController {
 
         // subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
         if (flagTransfer == "SALE")
-          subtotal = Number((amount + (amount * fees) / 100).toFixed(2))
+          subtotal = Number((amount + (amount * fees) / 100))
         else if (flagTransfer == "GIFT")
-          subtotal = Number(((amount * fees) / 100).toFixed(2))
+          subtotal = Number(((amount * fees) / 100))
 
         // check maximums
         const wallets = await walletRepo.getAllAccountWallets(fromWallet.id, [
@@ -267,7 +267,7 @@ export class TransactionController {
         await AppDataSource.manager.transaction(async (em: EntityManager) => {
           // note 1
           const total = fromWallet.bonus ?
-            (flagTransfer == "SALE" ? amount : 0) + Number(((amount * fromWallet.bonus) / 100).toFixed(2))
+            (flagTransfer == "SALE" ? amount : 0) + Number(((amount * fromWallet.bonus) / 100))
             : amount
           // take system cut
           // transfer
@@ -735,7 +735,7 @@ export const makeTransaction = async (
 
 
       // system fees 
-      const cutAmount = Number(((amount * fees) / 100).toFixed(2))
+      const cutAmount = Number(((amount * fees) / 100))
       // const cutAmount = fees
 
       if (cutAmount > 0) {
@@ -771,9 +771,9 @@ export const makeTransaction = async (
     const trx = new Transaction()
     if (from.bonus && type === TransactionTypes.TRANSFER)
       if (flagTransfer == "SALE")
-        amount += Number(((amount * from.bonus) / 100).toFixed(2))
+        amount += Number(((amount * from.bonus) / 100))
       else if (flagTransfer == "GIFT")
-        amount = Number(((amount * from.bonus) / 100).toFixed(2))
+        amount = Number(((amount * from.bonus) / 100))
 
 
 
@@ -787,7 +787,7 @@ export const makeTransaction = async (
     await em.save(trx)
 
     // update wallets
-    const cutAmount = Number(((amount * fees) / 100).toFixed(2))
+    const cutAmount = Number(((amount * fees) / 100))
     from.balance -= (amount + cutAmount)
     from.totalTrx += 1
     to.totalTrx += 1
@@ -830,7 +830,7 @@ export const transferGiftingPoints = async (
       const amt = Math.min(rec.amount, amount - totalTransferred)
       Log.debug(`Transferred ${amt} points`)
       rec.amount -= amt
-      rec.amount = Number(rec.amount.toFixed(2))
+      rec.amount = Number(rec.amount)
       totalTransferred += amt
       // add recs to reciever
       await recordRepo.updateWalletBalance(to.id, rec.originWalletId, amt)
@@ -846,7 +846,7 @@ export const transferGiftingPoints = async (
     totalTransferred = 0
     Log.debug(`${systemWallet.id}, ${fees}`)
     if (systemWallet && fees) {
-      const cutAmount = Number(((amount * fees) / 100).toFixed(2))
+      const cutAmount = Number(((amount * fees) / 100))
       Log.debug(`Cut amount: ${cutAmount}`)
       if (cutAmount > 0) {
         // update system wallet balance
@@ -857,7 +857,7 @@ export const transferGiftingPoints = async (
           const amt = Math.min(rec.amount, cutAmount - totalTransferred)
           rec.amount -= amt
           totalTransferred += amt
-          rec.amount = Number(rec.amount.toFixed(2))
+          rec.amount = Number(rec.amount)
           // add recs to reciever
           await recordRepo.updateWalletBalance(
             systemWallet.id,
